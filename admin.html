@@ -1,0 +1,2227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin — Portfolio CMS</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #080d1a;
+            --bg2: #0d1525;
+            --bg3: #111e35;
+            --bg4: #1a2744;
+            --border: #1e2f50;
+            --border2: #2a3f6a;
+            --text: #e2eaf8;
+            --muted: #4a6080;
+            --accent: #4f8ef7;
+            --accent2: #7eb3ff;
+            --danger: #f75f5f;
+            --success: #4fd89c;
+            --warning: #f7b84f;
+            --glow: rgba(79, 142, 247, 0.18);
+            --font-d: 'Syne', sans-serif;
+            --font-m: 'DM Mono', monospace;
+            --sw: 250px;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-d);
+            min-height: 100vh;
+        }
+
+        /* ════ LOGIN SCREEN ════ */
+        #login-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #login-screen::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 40%, rgba(79, 142, 247, 0.1) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            padding: 48px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-logo {
+            font-family: var(--font-m);
+            font-size: 0.8rem;
+            color: var(--accent);
+            margin-bottom: 36px;
+            display: block;
+        }
+
+        .login-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 8px;
+        }
+
+        .login-sub {
+            font-family: var(--font-m);
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-bottom: 36px;
+        }
+
+        .login-label {
+            font-family: var(--font-m);
+            font-size: 0.62rem;
+            color: var(--muted);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .login-input {
+            width: 100%;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: var(--font-m);
+            font-size: 0.85rem;
+            padding: 13px 16px;
+            outline: none;
+            margin-bottom: 20px;
+            letter-spacing: 0.08em;
+            transition: border-color 0.2s;
+        }
+
+        .login-input:focus {
+            border-color: var(--accent);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            border: none;
+            color: #fff;
+            font-family: var(--font-d);
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .login-btn:hover {
+            background: var(--accent2);
+            box-shadow: 0 0 24px var(--glow);
+        }
+
+        .login-error {
+            font-family: var(--font-m);
+            font-size: 0.7rem;
+            color: var(--danger);
+            margin-top: 12px;
+            display: none;
+        }
+
+        .login-hint {
+            font-family: var(--font-m);
+            font-size: 0.62rem;
+            color: var(--muted);
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* ════ ADMIN SHELL ════ */
+        #admin-shell {
+            display: none;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sw);
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            padding: 32px 0;
+        }
+
+        .sidebar-logo {
+            padding: 0 28px 28px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-logo-mark {
+            font-family: var(--font-m);
+            font-size: 0.85rem;
+            color: var(--accent);
+        }
+
+        .sidebar-logo-sub {
+            font-family: var(--font-m);
+            font-size: 0.58rem;
+            color: var(--muted);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .nav-grp {
+            font-family: var(--font-m);
+            font-size: 0.58rem;
+            color: var(--muted);
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            padding: 16px 28px 6px;
+        }
+
+        .slink {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 10px 28px;
+            font-family: var(--font-m);
+            font-size: 0.72rem;
+            color: var(--muted);
+            cursor: pointer;
+            border-left: 2px solid transparent;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .slink:hover,
+        .slink.active {
+            color: var(--text);
+            background: rgba(79, 142, 247, 0.06);
+            border-left-color: var(--accent);
+        }
+
+        .slink.active {
+            color: var(--accent);
+        }
+
+        .slink-icon {
+            width: 15px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .sidebar-btm {
+            margin-top: auto;
+            padding: 20px 28px;
+            border-top: 1px solid var(--border);
+        }
+
+        .admin-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-av {
+            width: 30px;
+            height: 30px;
+            background: var(--accent);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .admin-nm {
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .admin-rl {
+            font-family: var(--font-m);
+            font-size: 0.6rem;
+            color: var(--muted);
+        }
+
+        .logout-btn {
+            margin-top: 12px;
+            width: 100%;
+            padding: 8px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-family: var(--font-m);
+            font-size: 0.65rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* MAIN */
+        .main {
+            margin-left: var(--sw);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            padding: 18px 40px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(8, 13, 26, 0.9);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 40;
+        }
+
+        .topbar-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .topbar-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        .live-txt {
+            font-family: var(--font-m);
+            font-size: 0.65rem;
+            color: var(--success);
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding: 9px 18px;
+            font-family: var(--font-m);
+            font-size: 0.68rem;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--muted);
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent2);
+            border-color: var(--accent2);
+            color: #fff;
+        }
+
+        .btn-danger {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 0.6rem;
+        }
+
+        /* CONTENT & PAGES */
+        .content {
+            padding: 36px 40px;
+            flex: 1;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* PANEL */
+        .panel {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .panel-hdr {
+            padding: 18px 26px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .panel-body {
+            padding: 26px;
+        }
+
+        /* FORMS */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            font-family: var(--font-m);
+            font-size: 0.6rem;
+            color: var(--muted);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 7px;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: var(--font-m);
+            font-size: 0.78rem;
+            padding: 11px 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 88px;
+        }
+
+        .form-select option {
+            background: var(--bg2);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+        }
+
+        /* STATS CARDS */
+        .stat-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            margin-bottom: 28px;
+        }
+
+        .sc {
+            background: var(--bg2);
+            padding: 24px;
+        }
+
+        .sc-label {
+            font-family: var(--font-m);
+            font-size: 0.6rem;
+            color: var(--muted);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .sc-val {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 1;
+        }
+
+        .sc-val.blue {
+            color: var(--accent);
+        }
+
+        .sc-val.green {
+            color: var(--success);
+        }
+
+        .sc-val.yellow {
+            color: var(--warning);
+        }
+
+        .sc-delta {
+            font-family: var(--font-m);
+            font-size: 0.62rem;
+            color: var(--success);
+            margin-top: 7px;
+        }
+
+        .sc-delta.down {
+            color: var(--danger);
+        }
+
+        /* TABLE */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead tr {
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            font-family: var(--font-m);
+            font-size: 0.6rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            text-align: left;
+            padding: 0 12px 12px 0;
+            font-weight: 400;
+        }
+
+        td {
+            padding: 14px 12px 14px 0;
+            font-size: 0.78rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(79, 142, 247, 0.02);
+        }
+
+        /* BADGE */
+        .badge {
+            display: inline-block;
+            padding: 3px 9px;
+            font-family: var(--font-m);
+            font-size: 0.57rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            border: 1px solid;
+        }
+
+        .badge-green {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .badge-yellow {
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .badge-red {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .badge-blue {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* SKILLS EDITOR */
+        .skill-editor-item {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .skill-editor-hdr {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .skill-editor-title {
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        /* PROJECT EDITOR */
+        .proj-editor-item {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 12px;
+        }
+
+        .proj-editor-hdr {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        /* TOGGLE */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toggle-row:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-info .ti-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .toggle-info .ti-desc {
+            font-family: var(--font-m);
+            font-size: 0.65rem;
+            color: var(--muted);
+            margin-top: 3px;
+        }
+
+        .toggle {
+            width: 38px;
+            height: 20px;
+            background: var(--bg4);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .toggle.on {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 14px;
+            height: 14px;
+            background: var(--muted);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .toggle.on::after {
+            transform: translateX(18px);
+            background: #fff;
+        }
+
+        /* MSG */
+        .msg-item {
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .msg-item:last-child {
+            border-bottom: none;
+        }
+
+        .msg-from {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .msg-body {
+            font-family: var(--font-m);
+            font-size: 0.68rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .msg-time {
+            font-family: var(--font-m);
+            font-size: 0.6rem;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .unread {
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 6px var(--accent);
+            margin-right: 7px;
+            vertical-align: middle;
+        }
+
+        /* LOG */
+        .log-item {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-m);
+            font-size: 0.68rem;
+        }
+
+        .log-item:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            color: var(--muted);
+            min-width: 88px;
+        }
+
+        .log-type {
+            min-width: 64px;
+        }
+
+        .log-msg {
+            color: var(--muted);
+        }
+
+        /* CHART */
+        .chart-wrap {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 80px;
+        }
+
+        .chart-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            flex: 1;
+        }
+
+        .chart-bar {
+            width: 100%;
+            background: var(--accent);
+            opacity: 0.6;
+            border-radius: 2px 2px 0 0;
+            transition: opacity 0.2s;
+        }
+
+        .chart-bar:hover {
+            opacity: 1;
+        }
+
+        .chart-lbl {
+            font-family: var(--font-m);
+            font-size: 0.52rem;
+            color: var(--muted);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        /* TOAST */
+        #toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            background: var(--bg2);
+            border: 1px solid var(--accent);
+            padding: 13px 22px;
+            font-family: var(--font-m);
+            font-size: 0.72rem;
+            color: var(--accent);
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Divider label */
+        .divider-label {
+            font-family: var(--font-m);
+            font-size: 0.6rem;
+            color: var(--accent);
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            padding: 12px 0 8px;
+            margin-top: 8px;
+            border-top: 1px solid var(--border);
+        }
+
+        @media(max-width:900px) {
+            .sidebar {
+                width: 58px;
+            }
+
+            .sidebar-logo-mark,
+            .sidebar-logo-sub,
+            .nav-grp,
+            .slink span,
+            .admin-nm,
+            .admin-rl,
+            .logout-btn {
+                display: none;
+            }
+
+            .main {
+                margin-left: 58px;
+            }
+
+            .stat-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .grid-2,
+            .form-row,
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══ LOGIN ═══ -->
+    <div id="login-screen">
+        <div class="login-box">
+            <span class="login-logo">◈ portfolio_cms</span>
+            <h1 class="login-title">Admin Access</h1>
+            <p class="login-sub">Enter your credentials to manage the portfolio.</p>
+            <label class="login-label">Username</label>
+            <input class="login-input" id="login-user" type="text" placeholder="admin" autocomplete="username" />
+            <label class="login-label">Password</label>
+            <input class="login-input" id="login-pass" type="password" placeholder="••••••••"
+                autocomplete="current-password" />
+            <button class="login-btn" onclick="doLogin()">Sign In →</button>
+            <div class="login-error" id="login-error">Incorrect username or password.</div>
+            <p class="login-hint">Hint: admin / admin123</p>
+        </div>
+    </div>
+
+    <!-- ═══ ADMIN SHELL ═══ -->
+    <div id="admin-shell">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="sidebar-logo-mark">◈ CMS</div>
+                <div class="sidebar-logo-sub">Portfolio Admin</div>
+            </div>
+
+            <span class="nav-grp">Overview</span>
+            <div class="slink active" onclick="showPage('dashboard',this)"><span
+                    class="slink-icon">▦</span><span>Dashboard</span></div>
+            <div class="slink" onclick="showPage('messages',this)"><span
+                    class="slink-icon">✉</span><span>Messages</span></div>
+            <div class="slink" onclick="showPage('analytics',this)"><span
+                    class="slink-icon">◎</span><span>Analytics</span></div>
+
+            <span class="nav-grp">Portfolio Sections</span>
+            <div class="slink" onclick="showPage('hero',this)"><span class="slink-icon">★</span><span>Hero</span></div>
+            <div class="slink" onclick="showPage('about',this)"><span class="slink-icon">◈</span><span>About</span>
+            </div>
+            <div class="slink" onclick="showPage('skills',this)"><span class="slink-icon">⬡</span><span>Skills</span>
+            </div>
+            <div class="slink" onclick="showPage('education',this)"><span
+                    class="slink-icon">🎓</span><span>Education</span></div>
+            <div class="slink" onclick="showPage('certifications',this)"><span
+                    class="slink-icon">📜</span><span>Certifications</span></div>
+            <div class="slink" onclick="showPage('achievements',this)"><span
+                    class="slink-icon">🏆</span><span>Achievements</span></div>
+            <div class="slink" onclick="showPage('projects',this)"><span
+                    class="slink-icon">◇</span><span>Projects</span></div>
+            <div class="slink" onclick="showPage('contact',this)"><span class="slink-icon">✦</span><span>Contact</span>
+            </div>
+
+            <span class="nav-grp">System</span>
+            <div class="slink" onclick="showPage('settings',this)"><span
+                    class="slink-icon">△</span><span>Settings</span></div>
+            <div class="slink" onclick="showPage('logs',this)"><span class="slink-icon">○</span><span>Activity
+                    Log</span></div>
+
+            <div class="sidebar-btm">
+                <div class="admin-badge">
+                    <div class="admin-av">AM</div>
+                    <div>
+                        <div class="admin-nm">Alex Morgan</div>
+                        <div class="admin-rl">Administrator</div>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="doLogout()">⬡ Sign Out</button>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main">
+            <div class="topbar">
+                <div class="topbar-title" id="page-title">Dashboard</div>
+                <div class="topbar-right">
+                    <div class="live-dot" id="connection-dot"></div>
+                    <span class="live-txt" id="connection-text">Connecting...</span>
+                    <button class="btn btn-primary" onclick="publishAll()">↑ Publish All</button>
+                </div>
+            </div>
+
+            <div class="content">
+
+                <!-- ══ DASHBOARD ══ -->
+                <div class="page active" id="page-dashboard">
+                    <div class="stat-cards">
+                        <div class="sc">
+                            <div class="sc-label">Page Views (30d)</div>
+                            <div class="sc-val blue">12,840</div>
+                            <div class="sc-delta">↑ 18% vs last month</div>
+                        </div>
+                        <div class="sc">
+                            <div class="sc-label">Unique Visitors</div>
+                            <div class="sc-val">4,210</div>
+                            <div class="sc-delta">↑ 9%</div>
+                        </div>
+                        <div class="sc">
+                            <div class="sc-label">Messages</div>
+                            <div class="sc-val yellow">23</div>
+                            <div class="sc-delta down">3 unread</div>
+                        </div>
+                        <div class="sc">
+                            <div class="sc-label">Projects Listed</div>
+                            <div class="sc-val green" id="dash-proj-count">5</div>
+                            <div class="sc-delta">All published</div>
+                        </div>
+                    </div>
+                    <div class="grid-2">
+                        <div class="panel">
+                            <div class="panel-hdr"><span class="panel-title">Weekly Traffic</span></div>
+                            <div class="panel-body">
+                                <div class="chart-wrap">
+                                    <div class="chart-col">
+                                        <div class="chart-bar" style="height:45%"></div><span
+                                            class="chart-lbl">Mon</span>
+                                    </div>
+                                    <div class="chart-col">
+                                        <div class="chart-bar" style="height:62%"></div><span
+                                            class="chart-lbl">Tue</span>
+                                    </div>
+                                    <div class="chart-col">
+                                        <div class="chart-bar" style="height:55%"></div><span
+                                            class="chart-lbl">Wed</span>
+                                    </div>
+                                    <div class="chart-col">
+                                        <div class="chart-bar" style="height:80%"></div><span
+                                            class="chart-lbl">Thu</span>
+                                    </div>
+                                    <div class="chart-col">
+                                        <div class="chart-bar" style="height:100%"></div><span
+                                            class="chart-lbl">Fri</span>
+                                    </div>
+                                    <div class="chart-col">
+                                        <div class="chart-bar" style="height:70%"></div><span
+                                            class="chart-lbl">Sat</span>
+                                    </div>
+                                    <div class="chart-col">
+                                        <div class="chart-bar" style="height:40%"></div><span
+                                            class="chart-lbl">Sun</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <div class="panel-hdr"><span class="panel-title">Quick Actions</span></div>
+                            <div class="panel-body" style="display:flex;flex-direction:column;gap:10px">
+                                <button class="btn btn-primary"
+                                    onclick="showPage('hero',document.querySelector('[onclick*=hero]'));toast('Editing Hero')">Edit
+                                    Hero Section</button>
+                                <button class="btn"
+                                    onclick="showPage('projects',document.querySelector('[onclick*=projects]'));toast('Editing Projects')">Manage
+                                    Projects</button>
+                                <button class="btn"
+                                    onclick="showPage('skills',document.querySelector('[onclick*=skills]'));toast('Editing Skills')">Update
+                                    Skills</button>
+                                <button class="btn" onclick="publishAll()">↑ Publish to Portfolio</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-hdr"><span class="panel-title">Section Status</span></div>
+                        <div class="panel-body" style="padding:0 26px">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Section</th>
+                                        <th>Last Edited</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Hero</td>
+                                        <td id="st-hero">—</td>
+                                        <td><span class="badge badge-green">Published</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>About</td>
+                                        <td id="st-about">—</td>
+                                        <td><span class="badge badge-green">Published</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Skills</td>
+                                        <td id="st-skills">—</td>
+                                        <td><span class="badge badge-green">Published</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Projects</td>
+                                        <td id="st-projects">—</td>
+                                        <td><span class="badge badge-green">Published</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Contact</td>
+                                        <td id="st-contact">—</td>
+                                        <td><span class="badge badge-green">Published</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ MESSAGES ══ -->
+                <div class="page" id="page-messages">
+                    <div class="panel">
+                        <div class="panel-hdr">
+                            <span class="panel-title">Inbox (23)</span>
+                            <div style="display:flex;gap:8px">
+                                <button class="btn btn-sm" onclick="toast('All marked as read')">Mark All Read</button>
+                                <button class="btn btn-sm btn-danger" onclick="toast('Cleared!')">Clear All</button>
+                            </div>
+                        </div>
+                        <div class="panel-body" style="padding:0 26px">
+                            <div class="msg-item">
+                                <div>
+                                    <div class="msg-from"><span class="unread"></span>Sarah Chen · sarah@techcorp.io
+                                    </div>
+                                    <div class="msg-body">Hi Alex, I loved your portfolio! We have a senior frontend
+                                        opening at TechCorp. Would you be available for a chat?</div>
+                                </div>
+                                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                                    <div class="msg-time">2h ago</div><button class="btn btn-sm"
+                                        onclick="toast('Replied!')">Reply</button>
+                                </div>
+                            </div>
+                            <div class="msg-item">
+                                <div>
+                                    <div class="msg-from"><span class="unread"></span>James Kowalski · jk@studio.co
+                                    </div>
+                                    <div class="msg-body">Would you be interested in a 3-month freelance contract?
+                                        Budget is flexible.</div>
+                                </div>
+                                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                                    <div class="msg-time">5h ago</div><button class="btn btn-sm"
+                                        onclick="toast('Replied!')">Reply</button>
+                                </div>
+                            </div>
+                            <div class="msg-item">
+                                <div>
+                                    <div class="msg-from"><span class="unread"></span>Maya Patel · maya@designhub.com
+                                    </div>
+                                    <div class="msg-body">Your Orbit design system inspired our component library. Mind
+                                        if we credit you?</div>
+                                </div>
+                                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                                    <div class="msg-time">8h ago</div><button class="btn btn-sm"
+                                        onclick="toast('Replied!')">Reply</button>
+                                </div>
+                            </div>
+                            <div class="msg-item">
+                                <div>
+                                    <div class="msg-from">Priya Rajan · priya@vc.fund</div>
+                                    <div class="msg-body">We're looking for engineering leads at our portfolio
+                                        companies. Let's talk.</div>
+                                </div>
+                                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                                    <div class="msg-time">1d ago</div><button class="btn btn-sm"
+                                        onclick="toast('Replied!')">Reply</button>
+                                </div>
+                            </div>
+                            <div class="msg-item">
+                                <div>
+                                    <div class="msg-from">Luca Romano · luca@agency.it</div>
+                                    <div class="msg-body">We are a digital agency looking for a long-term fullstack
+                                        partner. Interested?</div>
+                                </div>
+                                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                                    <div class="msg-time">2d ago</div><button class="btn btn-sm"
+                                        onclick="toast('Replied!')">Reply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ ANALYTICS ══ -->
+                <div class="page" id="page-analytics">
+                    <div class="stat-cards">
+                        <div class="sc">
+                            <div class="sc-label">Avg Session</div>
+                            <div class="sc-val blue">3m 42s</div>
+                            <div class="sc-delta">↑ 12s improvement</div>
+                        </div>
+                        <div class="sc">
+                            <div class="sc-label">Bounce Rate</div>
+                            <div class="sc-val">38%</div>
+                            <div class="sc-delta">↓ 4% improvement</div>
+                        </div>
+                        <div class="sc">
+                            <div class="sc-label">Top Country</div>
+                            <div class="sc-val" style="font-size:1.3rem">🇺🇸 USA</div>
+                            <div class="sc-delta">42% of visitors</div>
+                        </div>
+                        <div class="sc">
+                            <div class="sc-label">Mobile</div>
+                            <div class="sc-val green">61%</div>
+                            <div class="sc-delta">↑ 5% vs desktop</div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-hdr"><span class="panel-title">Section Engagement</span></div>
+                        <div class="panel-body" style="padding:0 26px">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Section</th>
+                                        <th>Views</th>
+                                        <th>Avg Time</th>
+                                        <th>Scroll Depth</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Hero</td>
+                                        <td>12,840</td>
+                                        <td>0m 18s</td>
+                                        <td>100%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Projects</td>
+                                        <td>9,210</td>
+                                        <td>2m 05s</td>
+                                        <td>88%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>About</td>
+                                        <td>7,440</td>
+                                        <td>1m 12s</td>
+                                        <td>76%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Skills</td>
+                                        <td>6,820</td>
+                                        <td>0m 55s</td>
+                                        <td>70%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Contact</td>
+                                        <td>2,180</td>
+                                        <td>0m 42s</td>
+                                        <td>55%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ HERO EDITOR ══ -->
+                <div class="page" id="page-hero">
+                    <div class="panel">
+                        <div class="panel-hdr"><span class="panel-title">Edit Hero Section</span><button
+                                class="btn btn-primary" onclick="saveHero()">Save & Publish</button></div>
+                        <div class="panel-body">
+                            <div class="form-row">
+                                <div class="form-group"><label class="form-label">First Name</label><input
+                                        class="form-input" id="h-first" placeholder="Alex" /></div>
+                                <div class="form-group"><label class="form-label">Last Name</label><input
+                                        class="form-input" id="h-last" placeholder="Morgan" /></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label class="form-label">Role / Title</label><input
+                                        class="form-input" id="h-role" placeholder="Full Stack Developer" /></div>
+                                <div class="form-group"><label class="form-label">Available for Work?</label>
+                                    <select class="form-select" id="h-available">
+                                        <option value="true">Yes — Show badge</option>
+                                        <option value="false">No — Hide badge</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group"><label class="form-label">Hero Description (use ↵ for line
+                                    breaks)</label><textarea class="form-textarea" id="h-desc" rows="3"
+                                    placeholder="Crafting digital experiences..."></textarea></div>
+                            <div class="divider-label">Media & Documents</div>
+                            <div class="form-row">
+                                <div class="form-group"><label class="form-label">Profile Photo URL</label><input
+                                        class="form-input" id="h-photo" placeholder="https://..." /></div>
+                                <div class="form-group"><label class="form-label">Resume Link URL</label><input
+                                        class="form-input" id="h-resume" placeholder="https://..." /></div>
+                            </div>
+                            <div class="divider-label">Contact & Social Links</div>
+                            <div class="form-row">
+                                <div class="form-group"><label class="form-label">Email</label><input class="form-input"
+                                        id="h-email" placeholder="alex@example.com" /></div>
+                                <div class="form-group"><label class="form-label">GitHub URL</label><input
+                                        class="form-input" id="h-github" placeholder="https://github.com/..." /></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label class="form-label">LinkedIn URL</label><input
+                                        class="form-input" id="h-linkedin" placeholder="https://linkedin.com/in/..." />
+                                </div>
+                                <div class="form-group"><label class="form-label">Twitter/X URL</label><input
+                                        class="form-input" id="h-twitter" placeholder="https://twitter.com/..." /></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ ABOUT EDITOR ══ -->
+                <div class="page" id="page-about">
+                    <div class="panel">
+                        <div class="panel-hdr"><span class="panel-title">Edit About Section</span><button
+                                class="btn btn-primary" onclick="saveAbout()">Save & Publish</button></div>
+                        <div class="panel-body">
+                            <div class="form-group"><label class="form-label">Bio (use ↵ for
+                                    paragraphs)</label><textarea class="form-textarea" id="a-bio" rows="5"></textarea>
+                            </div>
+                            <div class="divider-label">Stats</div>
+                            <div class="form-row-3">
+                                <div class="form-group"><label class="form-label">Hackathons Attended</label><input
+                                        class="form-input" id="a-hackathons" placeholder="10+" /></div>
+                                <div class="form-group"><label class="form-label">Projects Shipped</label><input
+                                        class="form-input" id="a-proj" placeholder="40+" /></div>
+                                <div class="form-group"><label class="form-label">GitHub Stars</label><input
+                                        class="form-input" id="a-stars" placeholder="3k+" /></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ SKILLS EDITOR ══ -->
+                <div class="page" id="page-skills">
+                    <div class="panel">
+                        <div class="panel-hdr">
+                            <span class="panel-title">Edit Skills</span>
+                            <div style="display:flex;gap:8px">
+                                <button class="btn" onclick="addSkill()">+ Add Category</button>
+                                <button class="btn btn-primary" onclick="saveSkills()">Save & Publish</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div id="skills-editor"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ ACHIEVEMENTS EDITOR ══ -->
+                <div class="page" id="page-achievements">
+                    <div class="panel">
+                        <div class="panel-hdr">
+                            <span class="panel-title">Edit Achievements</span>
+                            <div style="display:flex;gap:8px">
+                                <button class="btn" onclick="addAchievement()">+ Add Achievement</button>
+                                <button class="btn btn-primary" onclick="saveAchievements()">Save & Publish</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div id="achievements-editor"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ EDUCATION EDITOR ══ -->
+                <div class="page" id="page-education">
+                    <div class="panel">
+                        <div class="panel-hdr">
+                            <span class="panel-title">Edit Education</span>
+                            <div style="display:flex;gap:8px">
+                                <button class="btn" onclick="addEducation()">+ Add Education</button>
+                                <button class="btn btn-primary" onclick="saveEducation()">Save & Publish</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div id="education-editor"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ CERTIFICATIONS EDITOR ══ -->
+                <div class="page" id="page-certifications">
+                    <div class="panel">
+                        <div class="panel-hdr">
+                            <span class="panel-title">Edit Certifications</span>
+                            <div style="display:flex;gap:8px">
+                                <button class="btn" onclick="addCertification()">+ Add Certification</button>
+                                <button class="btn btn-primary" onclick="saveCertifications()">Save & Publish</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div id="certifications-editor"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ PROJECTS EDITOR ══ -->
+                <div class="page" id="page-projects">
+                    <div class="panel">
+                        <div class="panel-hdr">
+                            <span class="panel-title">Edit Projects</span>
+                            <div style="display:flex;gap:8px">
+                                <button class="btn" onclick="addProject()">+ Add Project</button>
+                                <button class="btn btn-primary" onclick="saveProjects()">Save & Publish</button>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div id="projects-editor"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ CONTACT EDITOR ══ -->
+                <div class="page" id="page-contact">
+                    <div class="panel">
+                        <div class="panel-hdr"><span class="panel-title">Edit Contact Section</span><button
+                                class="btn btn-primary" onclick="saveContact()">Save & Publish</button></div>
+                        <div class="panel-body">
+                            <p
+                                style="font-family:var(--font-m);font-size:0.72rem;color:var(--muted);margin-bottom:20px">
+                                Contact details are shared with the Hero section. Editing here also updates the Hero
+                                links.</p>
+                            <div class="form-row">
+                                <div class="form-group"><label class="form-label">Email</label><input class="form-input"
+                                        id="c-email" placeholder="alex@example.com" /></div>
+                                <div class="form-group"><label class="form-label">GitHub URL</label><input
+                                        class="form-input" id="c-github" placeholder="https://github.com/..." /></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label class="form-label">LinkedIn URL</label><input
+                                        class="form-input" id="c-linkedin" placeholder="https://linkedin.com/in/..." />
+                                </div>
+                                <div class="form-group"><label class="form-label">Twitter/X URL</label><input
+                                        class="form-input" id="c-twitter" placeholder="https://twitter.com/..." /></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ SETTINGS ══ -->
+                <div class="page" id="page-settings">
+                    <div class="panel" style="margin-bottom:24px">
+                        <div class="panel-hdr"><span class="panel-title">Site Settings</span><button
+                                class="btn btn-primary" onclick="saveSettings()">Save</button></div>
+                        <div class="panel-body">
+                            <div class="form-group"><label class="form-label">Site Title</label><input
+                                    class="form-input" id="settings-title" value="Alex Morgan — Full Stack Developer" /></div>
+                            <div class="form-group"><label class="form-label">Meta Description</label><textarea
+                                    class="form-textarea" id="settings-meta-desc"
+                                    style="min-height:60px">Full Stack Developer crafting digital experiences with clean code and sharp design.</textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label class="form-label">Admin Password</label><input
+                                        class="form-input" id="settings-pass" type="password" placeholder="Change password..." /></div>
+                                <div class="form-group"><label class="form-label">Confirm Password</label><input
+                                        class="form-input" id="settings-pass-confirm" type="password" placeholder="Repeat password..." /></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-hdr"><span class="panel-title">Feature Toggles</span></div>
+                        <div class="panel-body">
+                            <div class="toggle-row">
+                                <div class="toggle-info">
+                                    <div class="ti-title">Contact Form</div>
+                                    <div class="ti-desc">Allow visitors to send messages</div>
+                                </div>
+                                <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+                            </div>
+                            <div class="toggle-row">
+                                <div class="toggle-info">
+                                    <div class="ti-title">Analytics Tracking</div>
+                                    <div class="ti-desc">Collect anonymized visit data</div>
+                                </div>
+                                <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+                            </div>
+                            <div class="toggle-row">
+                                <div class="toggle-info">
+                                    <div class="ti-title">Available for Work Badge</div>
+                                    <div class="ti-desc">Show badge in hero section</div>
+                                </div>
+                                <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+                            </div>
+                            <div class="toggle-row">
+                                <div class="toggle-info">
+                                    <div class="ti-title">Maintenance Mode</div>
+                                    <div class="ti-desc">Take portfolio offline temporarily</div>
+                                </div>
+                                <div class="toggle" onclick="this.classList.toggle('on')"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ LOGS ══ -->
+                <div class="page" id="page-logs">
+                    <div class="panel">
+                        <div class="panel-hdr"><span class="panel-title">Activity Log</span><button
+                                class="btn btn-sm btn-danger" onclick="clearLog()">Clear Logs</button></div>
+                        <div class="panel-body" style="padding:0 26px">
+                            <div id="log-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /content -->
+        </main>
+    </div><!-- /admin-shell -->
+
+    <div id="toast"></div>
+
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        /* ════════════════════════════════
+           AUTH
+        ════════════════════════════════ */
+        const ADMIN_USER = 'admin';
+        const ADMIN_PASS = 'admin123';
+
+        async function doLogin() {
+            const u = document.getElementById('login-user').value.trim();
+            const p = document.getElementById('login-pass').value;
+            const errEl = document.getElementById('login-error');
+            errEl.style.display = 'none';
+
+            if (u.includes('@')) {
+                // Supabase Auth Mode
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: u,
+                    password: p
+                });
+                if (error) {
+                    errEl.textContent = error.message;
+                    errEl.style.display = 'block';
+                } else {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('admin-shell').style.display = 'flex';
+                    initAdmin();
+                }
+            } else {
+                // Local Mode
+                const storedPass = localStorage.getItem('admin_password') || ADMIN_PASS;
+                if (u === ADMIN_USER && p === storedPass) {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('admin-shell').style.display = 'flex';
+                    initAdmin();
+                } else {
+                    errEl.textContent = 'Incorrect username or password.';
+                    errEl.style.display = 'block';
+                }
+            }
+        }
+        document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+        function doLogout() {
+            document.getElementById('admin-shell').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('login-user').value = '';
+            document.getElementById('login-pass').value = '';
+            document.getElementById('login-error').style.display = 'none';
+        }
+
+        /* ════════════════════════════════
+           DEFAULTS
+        ════════════════════════════════ */
+        const DEF = {
+            hero: {
+                firstName: 'Alex', lastName: 'Morgan',
+                role: 'Full Stack Developer', available: true,
+                desc: 'Crafting digital experiences\nwith clean code & sharp design.\nBased in New York, working worldwide.',
+                photo: 'https://via.placeholder.com/380', resume: '#',
+                email: 'alex@example.com', github: '#', linkedin: '#', twitter: '#'
+            },
+            about: {
+                bio: "I'm a full-stack developer with 6+ years of experience turning ideas into fast, accessible, and beautifully crafted products. I thrive at the intersection of engineering and design — obsessing over every pixel and every millisecond of load time.\n\nWhen I'm not shipping code, I'm contributing to open source, writing about web performance, and exploring the outdoors.",
+                hackathons: '10+', projects: '40+', stars: '3k+'
+            },
+            skills: [
+                { icon: '⬡', title: 'Frontend', items: 'React / Next.js\nTypeScript\nTailwind CSS\nFramer Motion\nWebGL / Three.js' },
+                { icon: '◈', title: 'Backend', items: 'Node.js / Express\nPython / FastAPI\nPostgreSQL\nRedis\nGraphQL' },
+                { icon: '◎', title: 'DevOps & Cloud', items: 'AWS / GCP\nDocker / Kubernetes\nCI/CD Pipelines\nTerraform\nVercel / Netlify' },
+                { icon: '◇', title: 'Design', items: 'Figma\nUI/UX Principles\nDesign Systems\nPrototyping\nAccessibility (WCAG)' },
+                { icon: '○', title: 'Testing', items: 'Jest / Vitest\nPlaywright\nCypress\nTDD Practices\nStorybook' },
+                { icon: '△', title: 'Soft Skills', items: 'Technical Writing\nCode Reviews\nMentorship\nAgile / Scrum\nClient Communication' }
+            ],
+            achievements: [
+                { title: '1st Place - Global Web3 Hackathon', date: 'Oct 2024', desc: 'Built a decentralized identity solution using zero-knowledge proofs. Selected as winner from 500+ competing teams.' },
+                { title: 'AWS Certified Solutions Architect', date: 'May 2023', desc: 'Demonstrated advanced technical expertise in designing distributed applications and systems on the AWS platform.' }
+            ],
+            education: [
+                { degree: 'B.S. Computer Science', institution: 'University of Technology', date: '2015 - 2019', desc: 'Graduated with Honors. Specialized in Software Engineering and Human-Computer Interaction.' }
+            ],
+            certifications: [
+                { title: 'AWS Certified Developer', issuer: 'Amazon Web Services', date: '2023', link: '#' },
+                { title: 'Google UX Design Professional Certificate', issuer: 'Google', date: '2022', link: '#' }
+            ],
+            projects: [
+                { name: 'Luminary — SaaS Dashboard', desc: 'A real-time analytics platform for e-commerce brands with live KPI tracking and AI-driven insights.', tags: 'Next.js, Postgres, D3.js', year: '2024', url: '#' },
+                { name: 'Orbit — Design System', desc: 'An open-source component library with 80+ accessible components, used by 200+ developers.', tags: 'React, TypeScript, Storybook', year: '2024', url: '#' },
+                { name: 'Vaultex — Crypto Wallet', desc: 'A secure, non-custodial Web3 wallet with multi-chain support and hardware wallet integration.', tags: 'React Native, Solidity, Web3.js', year: '2023', url: '#' },
+                { name: 'Threadr — Social Platform', desc: 'A minimalist long-form writing platform with collaborative editing and threaded discussions.', tags: 'Vue 3, Node.js, MongoDB', year: '2023', url: '#' },
+                { name: 'Prism — AI Image Tool', desc: 'Browser-based image enhancement powered by ML models running entirely client-side via WebAssembly.', tags: 'Python, WASM, TensorFlow', year: '2022', url: '#' }
+            ]
+        };
+
+        /* ════════════════════════════════
+           STORAGE & SUPABASE
+        ════════════════════════════════ */
+        const supabaseUrl = window.PORTFOLIO_CONFIG?.supabaseUrl || 'https://hycucxkairiajqvgfztl.supabase.co';
+        const supabaseKey = window.PORTFOLIO_CONFIG?.supabaseKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Y3VjeGthaXJpYWpxdmdmenRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNzI5NDksImV4cCI6MjA5Mjc0ODk0OX0.v__RU-xs_DPI0P3yLfrCXMXnsG2Fmy1l-InPAbZEAvs';
+        let supabaseClient;
+        try {
+            supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+        } catch (e) {
+            console.error("Failed to initialize Supabase client. Check config.js:", e);
+        }
+
+        let dbData = {};
+
+        function setConnectionStatus(status) {
+            const dot = document.getElementById('connection-dot');
+            const txt = document.getElementById('connection-text');
+            if (!dot || !txt) return;
+
+            if (status === 'connected') {
+                dot.style.background = 'var(--success)';
+                dot.style.boxShadow = '0 0 8px var(--success)';
+                txt.textContent = 'Synced with Supabase';
+                txt.style.color = 'var(--success)';
+            } else if (status === 'local') {
+                dot.style.background = 'var(--warning)';
+                dot.style.boxShadow = '0 0 8px var(--warning)';
+                txt.textContent = 'Local Sync Only';
+                txt.style.color = 'var(--warning)';
+            } else {
+                dot.style.background = 'var(--danger)';
+                dot.style.boxShadow = '0 0 8px var(--danger)';
+                txt.textContent = 'Disconnected';
+                txt.style.color = 'var(--danger)';
+            }
+        }
+
+        async function saveToDB() {
+            // Save to localStorage immediately as a reliable local cache
+            try {
+                localStorage.setItem('portfolio_db_data', JSON.stringify(dbData));
+            } catch (e) {
+                console.error("Failed to save to localStorage:", e);
+            }
+
+            if (supabaseClient) {
+                try {
+                    const { error } = await supabaseClient.from('portfolio_data').upsert({ id: 1, data: dbData });
+                    if (error) {
+                        console.error("Error saving to Supabase:", error);
+                        setConnectionStatus('local');
+                        toast('Saved locally (Supabase write blocked/failed)');
+                    } else {
+                        setConnectionStatus('connected');
+                        toast('Saved & Synced to Supabase!');
+                    }
+                } catch (e) {
+                    console.error("Exception saving to Supabase:", e);
+                    setConnectionStatus('local');
+                    toast('Saved locally (Supabase offline)');
+                }
+            } else {
+                setConnectionStatus('local');
+                toast('Saved locally (Supabase client not initialized)');
+            }
+        }
+
+        function save(key, val, skipWrite = false) {
+            dbData[key] = val;
+            if (!skipWrite) {
+                saveToDB();
+            }
+        }
+
+        function load(key) {
+            return dbData[key] !== undefined ? dbData[key] : null;
+        }
+
+        /* ════════════════════════════════
+           INIT
+        ════════════════════════════════ */
+        let activityLog = [];
+        async function initAdmin() {
+            document.getElementById('page-title').textContent = 'Loading Dashboard...';
+
+            // Load from localStorage first so we have data instantly
+            try {
+                const localData = localStorage.getItem('portfolio_db_data');
+                if (localData) {
+                    dbData = JSON.parse(localData);
+                }
+            } catch (e) {
+                console.error("Failed to read from localStorage:", e);
+            }
+
+            let loadedFromSupabase = false;
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient.from('portfolio_data').select('*').eq('id', 1).single();
+                    if (error) {
+                        if (error.code !== 'PGRST116') {
+                            console.error("Error fetching data from Supabase:", error);
+                        }
+                        setConnectionStatus('local');
+                    } else if (data && data.data) {
+                        dbData = data.data;
+                        loadedFromSupabase = true;
+                        setConnectionStatus('connected');
+                        // Sync to localStorage
+                        try {
+                            localStorage.setItem('portfolio_db_data', JSON.stringify(dbData));
+                        } catch (e) {
+                            console.error("Failed to update localStorage:", e);
+                        }
+                    }
+                } catch (e) {
+                    console.error("Exception fetching from Supabase:", e);
+                    setConnectionStatus('local');
+                }
+            } else {
+                setConnectionStatus('local');
+            }
+
+            if (!dbData || Object.keys(dbData).length === 0) {
+                // If no data exists yet, initialize with defaults
+                dbData = { hero: DEF.hero, about: DEF.about, skills: DEF.skills, projects: DEF.projects, contact: DEF.contact };
+                await saveToDB();
+            }
+
+            document.getElementById('page-title').textContent = 'Dashboard';
+
+            populateHeroForm();
+            populateAboutForm();
+            renderSkillsEditor();
+            renderAchievementsEditor();
+            renderEducationEditor();
+            renderCertificationsEditor();
+            renderProjectsEditor();
+            populateContactForm();
+            populateSettingsForm();
+            updateDashboardStatus();
+            renderLog();
+        }
+
+        /* ════════════════════════════════
+           NAVIGATION
+        ════════════════════════════════ */
+        const pageTitles = {
+            dashboard: 'Dashboard', messages: 'Messages', analytics: 'Analytics',
+            hero: 'Hero Section', about: 'About Section', skills: 'Skills Section',
+            education: 'Education Section', certifications: 'Certifications Section',
+            achievements: 'Achievements Section', projects: 'Projects Section', contact: 'Contact Section',
+            settings: 'Settings', logs: 'Activity Log'
+        };
+        function showPage(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.slink').forEach(l => l.classList.remove('active'));
+            document.getElementById('page-' + id).classList.add('active');
+            document.getElementById('page-title').textContent = pageTitles[id] || id;
+            if (el) el.classList.add('active');
+        }
+
+        /* ════════════════════════════════
+           TOAST
+        ════════════════════════════════ */
+        let toastT;
+        function toast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = '✓ ' + msg; t.classList.add('show');
+            clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2400);
+        }
+
+        /* ════════════════════════════════
+           LOG
+        ════════════════════════════════ */
+        function addLog(type, msg, color = 'var(--accent)') {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            activityLog.unshift({ time: 'Today ' + time, type, msg, color });
+            renderLog();
+        }
+        function renderLog() {
+            const el = document.getElementById('log-list');
+            if (!activityLog.length) { el.innerHTML = '<p style="font-family:var(--font-m);font-size:0.7rem;color:var(--muted);padding:16px 0">No activity yet.</p>'; return; }
+            el.innerHTML = activityLog.map(l => `<div class="log-item"><span class="log-time">${l.time}</span><span class="log-type" style="color:${l.color}">${l.type}</span><span class="log-msg">${l.msg}</span></div>`).join('');
+        }
+        function clearLog() { activityLog = []; renderLog(); toast('Logs cleared'); }
+
+        /* ════════════════════════════════
+           DASHBOARD STATUS
+        ════════════════════════════════ */
+        function updateDashboardStatus() {
+            const keys = ['hero', 'about', 'skills', 'education', 'certifications', 'achievements', 'projects', 'contact'];
+            keys.forEach(k => {
+                const el = document.getElementById('st-' + k);
+                if (!el) return;
+                const exists = !!dbData[k];
+                el.textContent = exists ? 'Just now' : 'Never';
+            });
+            const projs = load('projects') || DEF.projects;
+            const cnt = document.getElementById('dash-proj-count');
+            if (cnt) cnt.textContent = projs.length;
+        }
+
+        /* ════════════════════════════════
+           HERO
+        ════════════════════════════════ */
+        function populateHeroForm() {
+            const d = load('hero') || DEF.hero;
+            document.getElementById('h-first').value = d.firstName || '';
+            document.getElementById('h-last').value = d.lastName || '';
+            document.getElementById('h-role').value = d.role || '';
+            document.getElementById('h-available').value = String(d.available !== false);
+            document.getElementById('h-desc').value = d.desc || '';
+            document.getElementById('h-photo').value = d.photo || '';
+            document.getElementById('h-resume').value = d.resume || '';
+            document.getElementById('h-email').value = d.email || '';
+            document.getElementById('h-github').value = d.github || '';
+            document.getElementById('h-linkedin').value = d.linkedin || '';
+            document.getElementById('h-twitter').value = d.twitter || '';
+        }
+        function saveHero(skipWrite = false) {
+            const d = {
+                firstName: document.getElementById('h-first').value,
+                lastName: document.getElementById('h-last').value,
+                role: document.getElementById('h-role').value,
+                available: document.getElementById('h-available').value === 'true',
+                desc: document.getElementById('h-desc').value,
+                photo: document.getElementById('h-photo').value,
+                resume: document.getElementById('h-resume').value,
+                email: document.getElementById('h-email').value,
+                github: document.getElementById('h-github').value,
+                linkedin: document.getElementById('h-linkedin').value,
+                twitter: document.getElementById('h-twitter').value,
+            };
+            save('hero', d, skipWrite);
+            if (!skipWrite) {
+                addLog('PUBLISH', 'Hero section updated', 'var(--success)');
+                updateDashboardStatus();
+                toast('Hero section saved & published!');
+            }
+        }
+
+        /* ════════════════════════════════
+           ABOUT
+        ════════════════════════════════ */
+        function populateAboutForm() {
+            const d = load('about') || DEF.about;
+            document.getElementById('a-bio').value = d.bio || '';
+            document.getElementById('a-hackathons').value = d.hackathons || '';
+            document.getElementById('a-proj').value = d.projects || '';
+            document.getElementById('a-stars').value = d.stars || '';
+        }
+        function saveAbout(skipWrite = false) {
+            const d = {
+                bio: document.getElementById('a-bio').value,
+                hackathons: document.getElementById('a-hackathons').value,
+                projects: document.getElementById('a-proj').value,
+                stars: document.getElementById('a-stars').value,
+            };
+            save('about', d, skipWrite);
+            if (!skipWrite) {
+                addLog('PUBLISH', 'About section updated', 'var(--success)');
+                updateDashboardStatus();
+                toast('About section saved & published!');
+            }
+        }
+
+        /* ════════════════════════════════
+           SKILLS
+        ════════════════════════════════ */
+        function getSkillsFromDOM() {
+            const icons = document.querySelectorAll('.skill-icon-input');
+            const titles = document.querySelectorAll('.skill-title-input');
+            const items = document.querySelectorAll('.skill-items-input');
+            const skills = [];
+            for (let i = 0; i < titles.length; i++) {
+                skills.push({ icon: icons[i].value, title: titles[i].value, items: items[i].value });
+            }
+            return skills;
+        }
+        function renderSkillsEditor() {
+            const skills = load('skills') || DEF.skills;
+            const el = document.getElementById('skills-editor');
+            el.innerHTML = skills.map((s, i) => `
+    <div class="skill-editor-item" id="skill-item-${i}">
+      <div class="skill-editor-hdr">
+        <div class="skill-editor-title">${s.title || 'Category ' + (i + 1)}</div>
+        <button class="btn btn-sm btn-danger" onclick="removeSkill(${i})">Remove</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Icon (emoji)</label><input class="form-input skill-icon-input" data-i="${i}" value="${s.icon || ''}"/></div>
+        <div class="form-group"><label class="form-label">Category Name</label><input class="form-input skill-title-input" data-i="${i}" value="${s.title || ''}"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Skills (one per line)</label><textarea class="form-textarea skill-items-input" data-i="${i}" rows="5">${s.items || ''}</textarea></div>
+    </div>`).join('');
+        }
+        function addSkill() {
+            const skills = getSkillsFromDOM();
+            skills.push({ icon: '◆', title: 'New Category', items: 'Skill 1\nSkill 2\nSkill 3' });
+            save('skills', skills);
+            renderSkillsEditor();
+            toast('Category added');
+        }
+        function removeSkill(i) {
+            const skills = getSkillsFromDOM();
+            skills.splice(i, 1);
+            save('skills', skills);
+            renderSkillsEditor();
+            toast('Category removed');
+        }
+        function saveSkills(skipWrite = false) {
+            const skills = getSkillsFromDOM();
+            save('skills', skills, skipWrite);
+            if (!skipWrite) {
+                renderSkillsEditor();
+                addLog('PUBLISH', 'Skills section updated', 'var(--success)');
+                updateDashboardStatus();
+                toast('Skills saved & published!');
+            }
+        }
+
+        /* ════════════════════════════════
+           ACHIEVEMENTS
+        ════════════════════════════════ */
+        function getAchievementsFromDOM() {
+            const titles = document.querySelectorAll('.ach-title-input');
+            const dates = document.querySelectorAll('.ach-date-input');
+            const descs = document.querySelectorAll('.ach-desc-input');
+            const achs = [];
+            for (let i = 0; i < titles.length; i++) {
+                achs.push({ title: titles[i].value, date: dates[i].value, desc: descs[i].value });
+            }
+            return achs;
+        }
+        function renderAchievementsEditor() {
+            const achs = load('achievements') || DEF.achievements;
+            const el = document.getElementById('achievements-editor');
+            el.innerHTML = achs.map((a, i) => `
+    <div class="skill-editor-item" id="ach-item-${i}">
+      <div class="skill-editor-hdr">
+        <div class="skill-editor-title">${a.title || 'Achievement ' + (i + 1)}</div>
+        <button class="btn btn-sm btn-danger" onclick="removeAchievement(${i})">Remove</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Title</label><input class="form-input ach-title-input" data-i="${i}" value="${a.title || ''}"/></div>
+        <div class="form-group"><label class="form-label">Date / Year</label><input class="form-input ach-date-input" data-i="${i}" value="${a.date || ''}"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea ach-desc-input" data-i="${i}" rows="3">${a.desc || ''}</textarea></div>
+    </div>`).join('');
+        }
+        function addAchievement() {
+            const achs = getAchievementsFromDOM();
+            achs.push({ title: 'New Achievement', date: '2025', desc: 'Description goes here.' });
+            save('achievements', achs);
+            renderAchievementsEditor();
+            toast('Achievement added');
+        }
+        function removeAchievement(i) {
+            const achs = getAchievementsFromDOM();
+            achs.splice(i, 1);
+            save('achievements', achs);
+            renderAchievementsEditor();
+            toast('Achievement removed');
+        }
+        function saveAchievements(skipWrite = false) {
+            const achs = getAchievementsFromDOM();
+            save('achievements', achs, skipWrite);
+            if (!skipWrite) {
+                renderAchievementsEditor();
+                addLog('PUBLISH', 'Achievements section updated', 'var(--success)');
+                updateDashboardStatus();
+                toast('Achievements saved & published!');
+            }
+        }
+
+        /* ════════════════════════════════
+           EDUCATION
+        ════════════════════════════════ */
+        function getEducationFromDOM() {
+            const degs = document.querySelectorAll('.edu-deg-input');
+            const insts = document.querySelectorAll('.edu-inst-input');
+            const dates = document.querySelectorAll('.edu-date-input');
+            const descs = document.querySelectorAll('.edu-desc-input');
+            const edus = [];
+            for (let i = 0; i < degs.length; i++) {
+                edus.push({ degree: degs[i].value, institution: insts[i].value, date: dates[i].value, desc: descs[i].value });
+            }
+            return edus;
+        }
+        function renderEducationEditor() {
+            const edus = load('education') || DEF.education || [];
+            const el = document.getElementById('education-editor');
+            el.innerHTML = edus.map((e, i) => `
+    <div class="skill-editor-item" id="edu-item-${i}">
+      <div class="skill-editor-hdr">
+        <div class="skill-editor-title">${e.degree || 'Education ' + (i + 1)}</div>
+        <button class="btn btn-sm btn-danger" onclick="removeEducation(${i})">Remove</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Degree</label><input class="form-input edu-deg-input" data-i="${i}" value="${e.degree || ''}"/></div>
+        <div class="form-group"><label class="form-label">Institution</label><input class="form-input edu-inst-input" data-i="${i}" value="${e.institution || ''}"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Dates</label><input class="form-input edu-date-input" data-i="${i}" value="${e.date || ''}"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea edu-desc-input" data-i="${i}" rows="3">${e.desc || ''}</textarea></div>
+    </div>`).join('');
+        }
+        function addEducation() {
+            const edus = getEducationFromDOM();
+            edus.push({ degree: 'New Degree', institution: 'New Institution', date: '2025', desc: 'Description goes here.' });
+            save('education', edus);
+            renderEducationEditor();
+            toast('Education added');
+        }
+        function removeEducation(i) {
+            const edus = getEducationFromDOM();
+            edus.splice(i, 1);
+            save('education', edus);
+            renderEducationEditor();
+            toast('Education removed');
+        }
+        function saveEducation(skipWrite = false) {
+            const edus = getEducationFromDOM();
+            save('education', edus, skipWrite);
+            if (!skipWrite) {
+                renderEducationEditor();
+                addLog('PUBLISH', 'Education section updated', 'var(--success)');
+                updateDashboardStatus();
+                toast('Education saved & published!');
+            }
+        }
+
+        /* ════════════════════════════════
+           CERTIFICATIONS
+        ════════════════════════════════ */
+        function getCertificationsFromDOM() {
+            const titles = document.querySelectorAll('.cert-title-input');
+            const isss = document.querySelectorAll('.cert-iss-input');
+            const dates = document.querySelectorAll('.cert-date-input');
+            const links = document.querySelectorAll('.cert-link-input');
+            const certs = [];
+            for (let i = 0; i < titles.length; i++) {
+                certs.push({ title: titles[i].value, issuer: isss[i].value, date: dates[i].value, link: links[i].value });
+            }
+            return certs;
+        }
+        function renderCertificationsEditor() {
+            const certs = load('certifications') || DEF.certifications || [];
+            const el = document.getElementById('certifications-editor');
+            el.innerHTML = certs.map((c, i) => `
+    <div class="skill-editor-item" id="cert-item-${i}">
+      <div class="skill-editor-hdr">
+        <div class="skill-editor-title">${c.title || 'Certification ' + (i + 1)}</div>
+        <button class="btn btn-sm btn-danger" onclick="removeCertification(${i})">Remove</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Title</label><input class="form-input cert-title-input" data-i="${i}" value="${c.title || ''}"/></div>
+        <div class="form-group"><label class="form-label">Issuer</label><input class="form-input cert-iss-input" data-i="${i}" value="${c.issuer || ''}"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Date</label><input class="form-input cert-date-input" data-i="${i}" value="${c.date || ''}"/></div>
+        <div class="form-group"><label class="form-label">Link URL</label><input class="form-input cert-link-input" data-i="${i}" value="${c.link || ''}"/></div>
+      </div>
+    </div>`).join('');
+        }
+        function addCertification() {
+            const certs = getCertificationsFromDOM();
+            certs.push({ title: 'New Certification', issuer: 'Issuer', date: '2025', link: '#' });
+            save('certifications', certs);
+            renderCertificationsEditor();
+            toast('Certification added');
+        }
+        function removeCertification(i) {
+            const certs = getCertificationsFromDOM();
+            certs.splice(i, 1);
+            save('certifications', certs);
+            renderCertificationsEditor();
+            toast('Certification removed');
+        }
+        function saveCertifications(skipWrite = false) {
+            const certs = getCertificationsFromDOM();
+            save('certifications', certs, skipWrite);
+            if (!skipWrite) {
+                renderCertificationsEditor();
+                addLog('PUBLISH', 'Certifications section updated', 'var(--success)');
+                updateDashboardStatus();
+                toast('Certifications saved & published!');
+            }
+        }
+
+        /* ════════════════════════════════
+           PROJECTS
+        ════════════════════════════════ */
+        function getProjectsFromDOM() {
+            const names = document.querySelectorAll('.proj-name-input');
+            const years = document.querySelectorAll('.proj-year-input');
+            const descs = document.querySelectorAll('.proj-desc-input');
+            const tags = document.querySelectorAll('.proj-tags-input');
+            const urls = document.querySelectorAll('.proj-url-input');
+            const projects = [];
+            for (let i = 0; i < names.length; i++) {
+                projects.push({ name: names[i].value, year: years[i].value, desc: descs[i].value, tags: tags[i].value, url: urls[i].value });
+            }
+            return projects;
+        }
+        function renderProjectsEditor() {
+            const projects = load('projects') || DEF.projects;
+            const el = document.getElementById('projects-editor');
+            el.innerHTML = projects.map((p, i) => `
+    <div class="proj-editor-item" id="proj-item-${i}">
+      <div class="proj-editor-hdr">
+        <div class="skill-editor-title">${String(i + 1).padStart(3, '0')} · ${p.name || 'Project ' + (i + 1)}</div>
+        <button class="btn btn-sm btn-danger" onclick="removeProject(${i})">Remove</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Project Name</label><input class="form-input proj-name-input" data-i="${i}" value="${p.name || ''}"/></div>
+        <div class="form-group"><label class="form-label">Year</label><input class="form-input proj-year-input" data-i="${i}" value="${p.year || ''}"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea proj-desc-input" data-i="${i}" rows="2">${p.desc || ''}</textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Tags (comma-separated)</label><input class="form-input proj-tags-input" data-i="${i}" value="${p.tags || ''}"/></div>
+        <div class="form-group"><label class="form-label">Project URL</label><input class="form-input proj-url-input" data-i="${i}" value="${p.url || '#'}"/></div>
+      </div>
+    </div>`).join('');
+        }
+        function addProject() {
+            const projects = getProjectsFromDOM();
+            projects.push({ name: 'New Project', desc: 'Project description here.', tags: 'Tag1, Tag2', year: new Date().getFullYear().toString(), url: '#' });
+            save('projects', projects);
+            renderProjectsEditor();
+            toast('Project added');
+        }
+        function removeProject(i) {
+            const projects = getProjectsFromDOM();
+            projects.splice(i, 1);
+            save('projects', projects);
+            renderProjectsEditor();
+            updateDashboardStatus();
+            toast('Project removed');
+        }
+        function saveProjects(skipWrite = false) {
+            const projects = getProjectsFromDOM();
+            save('projects', projects, skipWrite);
+            if (!skipWrite) {
+                renderProjectsEditor();
+                addLog('PUBLISH', 'Projects updated · ' + projects.length + ' projects', 'var(--success)');
+                updateDashboardStatus();
+                toast('Projects saved & published!');
+            }
+        }
+
+        /* ════════════════════════════════
+           CONTACT
+        ════════════════════════════════ */
+        function populateContactForm() {
+            const d = load('hero') || DEF.hero;
+            document.getElementById('c-email').value = d.email || '';
+            document.getElementById('c-github').value = d.github || '';
+            document.getElementById('c-linkedin').value = d.linkedin || '';
+            document.getElementById('c-twitter').value = d.twitter || '';
+        }
+        function saveContact(skipWrite = false) {
+            const existing = load('hero') || DEF.hero;
+            existing.email = document.getElementById('c-email').value;
+            existing.github = document.getElementById('c-github').value;
+            existing.linkedin = document.getElementById('c-linkedin').value;
+            existing.twitter = document.getElementById('c-twitter').value;
+            save('hero', existing, skipWrite);
+            if (!skipWrite) {
+                addLog('PUBLISH', 'Contact links updated', 'var(--success)');
+                updateDashboardStatus();
+                toast('Contact section saved & published!');
+            }
+        }
+
+        /* ════════════════════════════════
+           SETTINGS
+        ════════════════════════════════ */
+        function populateSettingsForm() {
+            const s = load('settings') || { siteTitle: 'Alex Morgan — Full Stack Developer', metaDescription: 'Full Stack Developer crafting digital experiences with clean code and sharp design.' };
+            document.getElementById('settings-title').value = s.siteTitle || '';
+            document.getElementById('settings-meta-desc').value = s.metaDescription || '';
+        }
+        async function saveSettings(skipWrite = false) {
+            const title = document.getElementById('settings-title').value;
+            const desc = document.getElementById('settings-meta-desc').value;
+            const settings = {
+                siteTitle: title,
+                metaDescription: desc
+            };
+            save('settings', settings, skipWrite);
+
+            // Handle password changes
+            const pass = document.getElementById('settings-pass').value;
+            const passConfirm = document.getElementById('settings-pass-confirm').value;
+
+            if (pass) {
+                if (pass !== passConfirm) {
+                    toast('Passwords do not match!');
+                    return;
+                }
+
+                // If logged in via Supabase Auth
+                const session = (await supabaseClient.auth.getSession()).data.session;
+                if (session) {
+                    const { error } = await supabaseClient.auth.updateUser({ password: pass });
+                    if (error) {
+                        toast('Error updating Supabase password: ' + error.message);
+                        return;
+                    } else {
+                        toast('Supabase password updated!');
+                    }
+                } else {
+                    // Local Mode password update
+                    localStorage.setItem('admin_password', pass);
+                    toast('Local admin password updated!');
+                }
+                document.getElementById('settings-pass').value = '';
+                document.getElementById('settings-pass-confirm').value = '';
+            }
+
+            if (!skipWrite) {
+                addLog('PUBLISH', 'Settings updated', 'var(--success)');
+                updateDashboardStatus();
+                toast('Settings saved & published!');
+            }
+        }
+
+        /* ════════════════════════════════
+           PUBLISH ALL
+        ════════════════════════════════ */
+        async function publishAll() {
+            saveHero(true);
+            saveAbout(true);
+            saveSkills(true);
+            saveAchievements(true);
+            saveEducation(true);
+            saveCertifications(true);
+            saveProjects(true);
+            saveContact(true);
+            if (document.getElementById('settings-title')) {
+                saveSettings(true);
+            }
+            await saveToDB();
+            addLog('PUBLISH', 'All sections published', 'var(--success)');
+            updateDashboardStatus();
+            toast('All sections published to portfolio!');
+        }
+    </script>
+</body>
+
+</html>
